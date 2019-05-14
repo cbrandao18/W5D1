@@ -1,7 +1,8 @@
 class ArtworksController < ApplicationController
     def index
-        artworks = Artwork.all
-        render json: artworks
+        user = User.find(params[:user_id])
+        total_artworks = user.artworks + user.shared_artworks
+        render json: total_artworks
     end
 
     def create
@@ -30,6 +31,22 @@ class ArtworksController < ApplicationController
         artwork = Artwork.find(params[:id])
         artwork.destroy
         render json: artwork
+    end
+
+    def like
+        #like has a user_id, likeable_id, and likeable_type
+        like = Like.new(user_id: params[:user_id], likeable_id: params[:id], likeable_type: 'Artwork')
+        if like.save
+            render json: like
+        else
+            render json: like.errors.full_messages, status: 422
+        end
+    end
+
+    def unlike
+        like = Like.find_by(user_id: params[:user_id], likeable_id: params[:id], likeable_type: 'Artwork')
+        like.destroy
+        render json: like
     end
 
     private

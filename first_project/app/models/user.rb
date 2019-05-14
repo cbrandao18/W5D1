@@ -16,4 +16,26 @@ class User < ApplicationRecord
     has_many :shared_artworks,
     through: :artwork_shares,
     source: :artwork
+
+    has_many :comments,
+    primary_key: :id,
+    foreign_key: :user_id,
+    class_name: :Comment
+
+    has_many :likes,
+    primary_key: :id,
+    foreign_key: :user_id,
+    class_name: 'Like'
+
+    #get this users liked comments
+    has_many :liked_comments,
+    through: :likes,
+    source: :likeable,
+    source_type: 'Comment'
+
+    #get this users liked artworks
+    has_many :liked_artworks,
+    through: :likes,
+    source: :likeable,
+    source_type: 'Artwork'
 end
